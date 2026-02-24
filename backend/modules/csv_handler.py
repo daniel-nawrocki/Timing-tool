@@ -1,35 +1,26 @@
 import csv
 
 class CSVHandler:
-    def __init__(self, filename):
-        self.filename = filename
+    def __init__(self, column_mapping=None):
+        # Initialize with a mapping provided by the user
+        self.column_mapping = column_mapping or {}
 
-    def parse_blasting_hole_data(self):
-        data = []
-        with open(self.filename, mode='r') as file:
-            reader = csv.reader(file)
-            next(reader)  # Skip header
-            for row in reader:
-                data.append(self._parse_row(row))
-        return data
+    def read_csv(self, file_path):
+        with open(file_path, mode='r', encoding='utf-8') as csv_file:
+            csv_reader = csv.DictReader(csv_file)
+            for row in csv_reader:
+                self.process_row(row)
 
-    def _parse_row(self, row):
-        # Assuming row has known structure, adjust according to actual data
-        return {
-            'hole_id': row[0],
-            'depth': float(row[1]),
-            'diameter': float(row[2]),
-            'charge_type': row[3],
-        }
+    def process_row(self, row):
+        # Map the row using the column_mapping provided
+        mapped_row = {self.column_mapping.get(key, key): value for key, value in row.items()}
+        # Perform operations on the mapped row
+        print(mapped_row)  # Replace with actual processing logic
 
-    def export_blasting_hole_data(self, data, export_filename):
-        with open(export_filename, mode='w', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow(['hole_id', 'depth', 'diameter', 'charge_type'])  # Header
-            for row in data:
-                writer.writerow([row['hole_id'], row['depth'], row['diameter'], row['charge_type']])
-        
-# Example usage: 
-# handler = CSVHandler('blasting_holes.csv')
-# data = handler.parse_blasting_hole_data()
-# handler.export_blasting_hole_data(data, 'exported_blasting_holes.csv')
+    def write_csv(self, file_path, data):
+        with open(file_path, mode='w', newline='', encoding='utf-8') as csv_file:
+            fieldnames = self.column_mapping.values()  # Use mapped values for header
+            csv_writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
+            csv_writer.writeheader()
+            for item in data:
+                csv_writer.writerow({self.column_mapping.get(key, key): value for key, value in item.items()})

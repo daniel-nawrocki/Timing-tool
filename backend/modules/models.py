@@ -39,4 +39,10 @@ class TimingConstraints:
 class BlastData:
     holes: list[dict[str, Any]]
     rows: list[dict[str, Any]]
-    constraints: dict[str, Any]
+    constraints: dict[str, Any] = field(default_factory=dict)
+    offsets: dict[str, Any] | None = None
+
+    def __post_init__(self) -> None:
+        """Maintain compatibility with older payloads that used `offsets`."""
+        if (not self.constraints) and self.offsets:
+            self.constraints = dict(self.offsets)

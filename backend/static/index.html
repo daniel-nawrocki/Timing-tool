@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Timing Tool</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <main class="layout">
+    <section class="panel controls">
+      <h1>Quarry Timing Solver</h1>
+
+      <label class="field">
+        <span>Upload hole CSV</span>
+        <input type="file" id="csvFile" accept=".csv" />
+      </label>
+
+      <div class="grid2">
+        <label class="field"><span>Hole-Hole Min (ms)</span><input type="number" id="hmin" value="9" min="1" /></label>
+        <label class="field"><span>Hole-Hole Max (ms)</span><input type="number" id="hmax" value="25" min="1" /></label>
+        <label class="field"><span>Row-Row Min (ms)</span><input type="number" id="rmin" value="17" min="1" /></label>
+        <label class="field"><span>Row-Row Max (ms)</span><input type="number" id="rmax" value="42" min="1" /></label>
+      </div>
+
+      <div class="row-actions">
+        <button id="newRowBtn">Create Next Row</button>
+        <label>Active Row
+          <select id="activeRow"></select>
+        </label>
+      </div>
+
+      <label class="field">
+        <span>Active row starts from previous row hole #</span>
+        <input type="number" id="startFromPrev" min="1" value="1" />
+      </label>
+
+      <div class="actions">
+        <button id="optimizeBtn">Optimize Timings</button>
+        <button id="exportBtn" disabled>Export Timing CSV</button>
+      </div>
+
+      <pre id="status">Upload a CSV to begin.</pre>
+    </section>
+
+    <section class="panel chart-panel">
+      <h2>Hole Pattern (drag to assign row)</h2>
+      <svg id="plot" viewBox="0 0 900 650"></svg>
+      <div class="legend" id="legend"></div>
+    </section>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

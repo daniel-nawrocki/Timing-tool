@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-import os
+
 from modules.csv_handler import CSVHandler
 from modules.optimizer import TimingOptimizer
 from modules.models import BlastData
@@ -8,7 +8,6 @@ from modules.models import BlastData
 app = Flask(__name__)
 CORS(app)
 
-# Initialize handlers
 csv_handler = CSVHandler()
 optimizer = TimingOptimizer()
 
@@ -19,7 +18,7 @@ def index():
 
 @app.route("/api/upload", methods=["POST"])
 def upload_csv():
-    """Handle CSV file upload and parsing"""
+    """Handle CSV file upload and parsing."""
     try:
         if "file" not in request.files:
             return jsonify({"error": "No file provided"}), 400
@@ -47,7 +46,7 @@ def upload_csv():
 
 @app.route("/api/optimize", methods=["POST"])
 def optimize_timing():
-    """Calculate optimal timing to minimize holes firing within 8ms"""
+    """Calculate optimal timing to minimize holes sharing a delay."""
     try:
         data = request.get_json()
 
@@ -82,7 +81,7 @@ def optimize_timing():
 
 @app.route("/api/validate", methods=["POST"])
 def validate_data():
-    """Validate holes and row configuration"""
+    """Validate holes and row configuration."""
     try:
         data = request.get_json()
 
@@ -114,7 +113,7 @@ def validate_data():
 
 @app.route("/api/export", methods=["POST"])
 def export_timing():
-    """Export timing results as CSV"""
+    """Export timing results as CSV."""
     try:
         data = request.get_json()
 

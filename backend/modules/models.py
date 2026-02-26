@@ -1,44 +1,42 @@
-from dataclasses import dataclass
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from typing import Any
+
 
 @dataclass
-class Hole:
-    id: int
-    depth: float
-    diameter: float
-    explosive_type: str
-    position: tuple[float, float]  # (x, y)
+class HoleRecord:
+    """A single blast hole loaded from CSV."""
+
+    id: str
+    x: float
+    y: float
+    attributes: dict[str, Any] = field(default_factory=dict)
+
 
 @dataclass
-class Row:
-    id: int
-    holes: list[Hole]
+class RowDefinition:
+    """User-assigned row with ordered hole ids.
+
+    start_from_prev_hole indicates which hole number in the previous row aligns with
+    the first hole in this row for row-to-row timing.
+    """
+
+    row_id: int
+    hole_ids: list[str]
+    start_from_prev_hole: int = 1
+
 
 @dataclass
-class HoleTiming:
-    hole_id: int
-    timing_data: dict  # key: time_type, value: time_value
+class TimingConstraints:
+    hole_to_hole_min: int
+    hole_to_hole_max: int
+    row_to_row_min: int
+    row_to_row_max: int
 
-@dataclass
-class ConflictInfo:
-    hole_id: int
-    description: str
-    resolution_steps: list[str]
-
-@dataclass
-class OptimizationMetrics:
-    metric_name: str
-    value: float
-    units: str
 
 @dataclass
 class BlastData:
-    date: str
-    location: str
-    rows: list[Row]
-    hole_timings: list[HoleTiming]
-
-@dataclass
-class OptimizationResult:
-    success: bool
-    metrics: list[OptimizationMetrics]
-    details: str
+    holes: list[dict[str, Any]]
+    rows: list[dict[str, Any]]
+    constraints: dict[str, Any]

@@ -1,13 +1,18 @@
 # Timing Tool
 
-Backend service for quarry blast timing optimization.
+Backend + visual UI for quarry blast timing optimization.
 
 ## What it does
 
 - Imports blast holes from CSV (`id`, `x`, `y`, plus optional extra columns).
-- Accepts user-defined row assignments with ordered hole IDs and row alignment offsets (`start_from_prev_hole`).
-- Finds hole-to-hole and row-to-row delays within user min/max ranges that minimize holes sharing the same delay.
-- Exports optimized delays to CSV.
+- Lets you click or drag-select holes into rows on a hole diagram.
+- Solves timing options across user-defined hole-to-hole and row-to-row ranges.
+- Shows selectable timing options in real time and updates delay labels on holes instantly.
+- Exports CSV including:
+  - selected hole-to-hole timing,
+  - selected row-to-row timing,
+  - holes-per-8ms summary,
+  - full hole delay table.
 
 ## Run
 
@@ -17,23 +22,16 @@ pip install -r requirements.txt
 python app.py
 ```
 
+Open `http://127.0.0.1:5000`.
+
 ## API
 
 ### `POST /api/upload`
-Form-data with file key `file`.
-
-### `POST /api/validate`
-```json
-{
-  "holes": [{"id": "H1", "x": 100.0, "y": 200.0}],
-  "rows": [
-    {"row_id": 1, "hole_ids": ["H1", "H2"], "start_from_prev_hole": 1},
-    {"row_id": 2, "hole_ids": ["H3", "H4"], "start_from_prev_hole": 3}
-  ]
-}
-```
+Form-data with key `file`.
 
 ### `POST /api/optimize`
+Payload:
+
 ```json
 {
   "holes": [{"id": "H1", "x": 100.0, "y": 200.0}],
@@ -50,17 +48,16 @@ Form-data with file key `file`.
 }
 ```
 
+Returns best `timing` + ranked `options` (first 20).
+
 ### `POST /api/export`
+Payload:
+
 ```json
 {
-  "timing": [
-    {
-      "hole_id": "H1",
-      "row_id": 1,
-      "position_in_row": 1,
-      "delay_ms": 0,
-      "row_reference_hole": 1
-    }
+  "timing": [...],
+  "summary": [
+    {"section": "timings", "name": "row_1_hole_to_hole_ms", "value": 17}
   ]
 }
 ```

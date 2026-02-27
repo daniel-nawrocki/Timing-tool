@@ -1,55 +1,42 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Timing Tool</title>
   <link rel="stylesheet" href="/static/styles.css" />
 </head>
+
 <body>
   <main class="layout">
-    <section class="panel controls">
-      <h1>Quarry Timing Solver</h1>
-
-      <label class="field">
-        <span>Upload hole CSV</span>
-        <input type="file" id="csvFile" accept=".csv" />
-      </label>
-
+    <section class="panel">
+      <h1>Timing Solver</h1>
+      <input id="csvFile" type="file" accept=".csv" />
       <div class="grid2">
-        <label class="field"><span>Hole-Hole Min (ms)</span><input type="number" id="hmin" value="9" min="1" /></label>
-        <label class="field"><span>Hole-Hole Max (ms)</span><input type="number" id="hmax" value="25" min="1" /></label>
-        <label class="field"><span>Row-Row Min (ms)</span><input type="number" id="rmin" value="17" min="1" /></label>
-        <label class="field"><span>Row-Row Max (ms)</span><input type="number" id="rmax" value="42" min="1" /></label>
+        <label>H-H min <input id="hmin" type="number" value="9" min="1"></label>
+        <label>H-H max <input id="hmax" type="number" value="25" min="1"></label>
+        <label>R-R min <input id="rmin" type="number" value="17" min="1"></label>
+        <label>R-R max <input id="rmax" type="number" value="42" min="1"></label>
       </div>
-
-      <div class="row-actions">
-        <button id="newRowBtn">Create Next Row</button>
-        <label>Active Row
-          <select id="activeRow"></select>
-        </label>
+      <div>
+        <button id="newRowBtn">Add Row</button>
+        <select id="activeRow"></select>
       </div>
-
-      <label class="field">
-        <span>Active row starts from previous row hole #</span>
-        <input type="number" id="startFromPrev" min="1" value="1" />
+      <label>Start from previous hole # <input id="startFromPrev" type="number" value="1" min="1"></label>
+      <button id="optimizeBtn">Optimize</button>
+      <label>Timing option
+        <select id="optionSelect"></select>
       </label>
-
-      <div class="actions">
-        <button id="optimizeBtn">Optimize Timings</button>
-        <button id="exportBtn" disabled>Export Timing CSV</button>
-      </div>
-
-      <pre id="status">Upload a CSV to begin.</pre>
+      <button id="exportBtn" disabled>Export CSV</button>
+      <pre id="status"></pre>
     </section>
-
-    <section class="panel chart-panel">
-      <h2>Hole Pattern (drag to assign row)</h2>
+    <section class="panel">
+      <h2>Hole Diagram (delay labels update live)</h2>
       <svg id="plot" viewBox="0 0 900 650"></svg>
-      <div class="legend" id="legend"></div>
     </section>
   </main>
-
   <script src="/static/app.js"></script>
 </body>
+
 </html>

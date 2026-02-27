@@ -32,12 +32,10 @@ class CSVHandler:
         return resolved
 
     def parse_csv(self, file_storage) -> list[dict[str, Any]]:
-        """Parse uploaded CSV and return normalized hole records."""
         content = file_storage.read()
-        if isinstance(content, bytes):
-            text = content.decode("utf-8-sig")
-        else:
-            text = str(content)
+        text = (
+            content.decode("utf-8-sig") if isinstance(content, bytes) else str(content)
+        )
 
         reader = csv.DictReader(io.StringIO(text))
         if not reader.fieldnames:
@@ -52,13 +50,17 @@ class CSVHandler:
                 x_val = float(row[columns["x"]])
                 y_val = float(row[columns["y"]])
             except (TypeError, ValueError) as exc:
-                raise ValueError(f"Invalid numeric value at CSV line {idx}: {exc}") from exc
+                raise ValueError(
+                    f"Invalid numeric value at CSV line {idx}: {exc}"
+                ) from exc
 
             if not hole_id:
                 raise ValueError(f"Missing hole id at CSV line {idx}")
 
             extras = {
-                k: v for k, v in row.items() if k not in {columns["id"], columns["x"], columns["y"]}
+                k: v
+                for k, v in row.items()
+                if k not in {columns["id"], columns["x"], columns["y"]}
             }
             holes.append({"id": hole_id, "x": x_val, "y": y_val, "attributes": extras})
 
@@ -67,22 +69,39 @@ class CSVHandler:
 
         return holes
 
-    def export_timing(self, timing_rows: list[dict[str, Any]]) -> str:
-        """Export timing assignments to CSV string."""
+    def export_timing(
+        self,
+        timing_rows: list[dict[str, Any]],
+        summary_rows: list[dict[str, Any]] | None = None,
+    ) -> str:
         if not timing_rows:
             raise ValueError("No timing data to export")
 
         output = io.StringIO()
-        writer = csv.DictWriter(
-            output,
-            fieldnames=[
-                "hole_id",
-                "row_id",
-                "position_in_row",
-                "delay_ms",
-                "row_reference_hole",
-            ],
-        )
-        writer.writeheader()
-        writer.writerows(timing_rows)
+        writer = csv.writer(output)
+
+        writer.writerow(["section", "name", "value"])
+        if summary_rows:
+            for item in summary_rows:
+                writer.writerow(
+                    [
+                        item.get("section", "summary"),
+                        item.get("name", ""),
+                        item.get("value", ""),
+                    ]
+                )
+        writer.writerow([])
+
+        fields = [
+            "hole_id",
+            "row_id",
+            "position_in_row",
+            "delay_ms",
+            "row_reference_hole",
+            "hole_to_hole_ms",
+            "row_to_row_ms",
+        ]
+        dict_writer = csv.DictWriter(output, fieldnames=fields)
+        dict_writer.writeheader()
+        dict_writer.writerows(timing_rows)
         return output.getvalue()

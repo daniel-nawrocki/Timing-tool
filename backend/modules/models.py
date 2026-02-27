@@ -44,5 +44,6 @@ class BlastData:
 
     def __post_init__(self) -> None:
         """Maintain compatibility with older payloads that used `offsets`."""
+
         if (not self.constraints) and self.offsets:
             self.constraints = dict(self.offsets)
